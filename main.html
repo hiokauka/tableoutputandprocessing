@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Table Output & Processing</title>
+    <style>
+        body {
+
+            background-color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
+
+        }
+
+        h2 {
+            display: inline-block;
+            margin-left: 550px;
+            padding: 10px 20px;
+            border: 2px solid black;
+            border-radius: 8px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        h3 {
+            margin-left: 470px;
+            display: inline-block;
+            padding: 10px 20px;
+            border: 2px solid black;
+            border-radius: 8px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        h2:hover,
+        h3:hover {
+            background-color: #dcdcdc;
+            transform: scale(1.05);
+        }
+
+        table {
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin: auto;
+            width: 50%;
+
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            width: 100px;
+
+            height: 40px;
+            padding: 8px;
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+            white-space: nowrap;
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="content1">
+        <h2>Table 1</h2>
+        <table id="table1">
+            <thead>
+                <tr>
+                    <th>Index#</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="content2">
+        <h3>Table 2 (Processed Data)</h3>
+        <table id="table2">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadCSVAndProcess() {
+            const response = await fetch('Table_Input.csv');
+            const text = await response.text();
+
+
+            const lines = text.trim().split('\n');
+            const data = lines.slice(1).map(line => {
+                const [id, value] = line.split(',');
+                return { id: id.trim(), value: parseFloat(value.trim()) };
+            });
+
+
+            const table1Body = document.querySelector('#table1 tbody');
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${row.id}</td><td>${row.value}</td>`;
+                table1Body.appendChild(tr);
+            });
+
+
+            function get(id) {
+                return data.find(row => row.id === id)?.value || 0;
+            }
+
+
+            const table2Data = [
+                { category: 'Alpha', value: get('A5') + get('A20') },
+                { category: 'Beta', value: get('A15') / get('A7') },
+                { category: 'Charlie', value: get('A13') * get('A12') },
+            ];
+
+
+            const table2Body = document.querySelector('#table2 tbody');
+            table2Data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${row.category}</td><td>${row.value}</td>`;
+                table2Body.appendChild(tr);
+            });
+        }
+
+        loadCSVAndProcess();
+    </script>
+</body>
+
+</html>
